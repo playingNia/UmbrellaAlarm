@@ -7,4 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <TextView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="12dp"
+        android:background="@color/blue"
+        android:text="@string/app_name"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:fontFamily="@font/scdream5"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
