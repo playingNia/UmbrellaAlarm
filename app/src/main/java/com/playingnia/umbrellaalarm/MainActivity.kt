@@ -1,6 +1,7 @@
 package com.playingnia.umbrellaalarm
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -11,8 +12,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
+import com.playingnia.umbrellaalarm.utils.LocationManager
+import kotlin.math.*
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        private lateinit var mainActivity: MainActivity
+
+        fun getInstance(): MainActivity {
+            return mainActivity
+        }
+    }
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
@@ -23,12 +34,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        mainActivity = this
+
         if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions()
         }
 
         binding.textSaveLocation.setOnClickListener {
-            saveLocation(binding.textTitle)
+            LocationManager.saveLocation(binding.textTitle)
         }
 
 
@@ -51,25 +64,5 @@ class MainActivity : AppCompatActivity() {
         }
 
         requestPermissionLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION))
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun saveLocation(textView: TextView) {
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        fusedLocationProviderClient.lastLocation.addOnSuccessListener { success: Location? ->
-            success?.let { location ->
-                textView.text = "${location.latitude.toFloat()}, ${location.longitude.toFloat()}"
-                val sharedPreferences = getSharedPreferences("Location", MODE_PRIVATE)
-                val editor = sharedPreferences.edit()
-                editor.putFloat("latitude", location.latitude.toFloat())
-                editor.putFloat("longtitude", location.longitude.toFloat())
-                editor.apply()
-
-                Toast.makeText(this, resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
-            }}
-            .addOnFailureListener { fail ->
-                Toast.makeText(this, fail.localizedMessage, Toast.LENGTH_SHORT).show()
-        }
     }
 }
