@@ -1,19 +1,14 @@
 package com.playingnia.umbrellaalarm
 
 import android.annotation.SuppressLint
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.android.gms.location.LocationServices
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
 
