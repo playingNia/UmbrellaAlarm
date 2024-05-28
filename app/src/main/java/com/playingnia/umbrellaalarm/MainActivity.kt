@@ -1,9 +1,11 @@
 package com.playingnia.umbrellaalarm
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -17,20 +19,21 @@ import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
     private val ACCESS_FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION
     private val ACCESS_COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions()
-        } else {
-            getLocation(binding.textTitle)
+        }
+
+        binding.textSaveLocation.setOnClickListener {
+            saveLocation(binding.textTitle)
         }
 
 
@@ -44,21 +47,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestPermissions() {
         val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            when {
-                permissions[ACCESS_FINE_LOCATION] == true -> {
-                    getLocation(binding.textTitle)
-                }
-
-                permissions[ACCESS_COARSE_LOCATION] == true -> {
-                    getLocation(binding.textTitle)
-                }
-
-                else -> {
-                    Toast.makeText(this, resources.getString(R.string.permisson_denied), Toast.LENGTH_LONG).show()
-                    moveTaskToBack(true)
-                    finish()
-                    android.os.Process.killProcess(android.os.Process.myPid())
-                }
+            if (permissions[ACCESS_FINE_LOCATION] == false && permissions[ACCESS_COARSE_LOCATION] == false) {
+                Toast.makeText(this, resources.getString(R.string.permisson_denied), Toast.LENGTH_LONG).show()
+                moveTaskToBack(true)
+                finish()
+                android.os.Process.killProcess(android.os.Process.myPid())
             }
         }
 
@@ -66,15 +59,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation(textView: TextView) {
+    private fun saveLocation(textView: TextView) {
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         fusedLocationProviderClient.lastLocation.addOnSuccessListener { success: Location? ->
             success?.let { location ->
-                textView.text = "${location.latitude}, ${location.longitude}"
+                textView.text = "${location.latitude.toFloat()}, ${location.longitude.toFloat()}"
+                val sharedPreferences = getSharedPreferences("Location", MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putFloat("latitude", location.latitude.toFloat())
+                editor.putFloat("longtitude", location.longitude.toFloat())
+                editor.apply()
+
+                Toast.makeText(this, resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
             }}
             .addOnFailureListener { fail ->
-                textView.text = fail.localizedMessage
+                Toast.makeText(this, fail.localizedMessage, Toast.LENGTH_SHORT).show()
         }
     }
 }
