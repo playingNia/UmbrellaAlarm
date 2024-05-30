@@ -1,6 +1,12 @@
 <resources>
-    <string name="app_name">우산 알리미</string>
-    <string name="save_location">위치 저장</string>
+    <string name="app_name">우산 알림이</string>
+    <string name="alarm_setting">알림 설정</string>
+    <string name="home">외출</string>
+    <string name="home_description">집에서부터 다음과 같은 거리 이상\n멀어지면 외출 상태로 전환합니다.</string>
+    <string name="m">0m</string>
+    <string name="distance">거리</string>
+    <string name="distance_description">우산에서부터 다음과 같은 거리 이상\n멀어지면 알림이 울립니다.</string>
+    <string name="save_location">현재 위치를 집으로 설정</string>
     <string name="success_to_save">위치를 저장했습니다.</string>
     <string name="permisson_denied">필수 권한이 부족합니다.</string>
 </resources>
