@@ -19,7 +19,7 @@ import kotlin.math.sqrt
 class LocationManager {
     companion object {
 
-        private val context by lazy { MainActivity.getInstance() }
+        private val main by lazy { MainActivity.getInstance() }
 
         fun SharedPreferences.Editor.putDouble(key: String, double: Double) =
             putLong(key, java.lang.Double.doubleToLongBits(double))
@@ -47,7 +47,7 @@ class LocationManager {
          */
         @SuppressLint("MissingPermission")
         fun getCurrentLocation(): Location? {
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager = main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val providers = locationManager.getProviders(true)
             var bestLoc: Location? = null
             for (provider in providers) {
@@ -65,7 +65,7 @@ class LocationManager {
          * @return Location 집의 위치
          */
         private fun getHomeLocation(): Location {
-            val sharedPreferences = context.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
+            val sharedPreferences = main.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             return sharedPreferences.getLocation()
         }
 
@@ -74,10 +74,10 @@ class LocationManager {
          */
         @SuppressLint("MissingPermission")
         fun saveLocation() {
-            val sharedPreferences = context.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
+            val sharedPreferences = main.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             val loc = getCurrentLocation()
             sharedPreferences.edit().putLocation(loc!!)
-            Toast.makeText(context, context.resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
+            Toast.makeText(main, main.resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
         }
 
         /***
@@ -116,7 +116,7 @@ class LocationManager {
                 return null
             }
 
-            val sharedPreferences = context.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
+            val sharedPreferences = main.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             if (!sharedPreferences.contains("latitude") || !sharedPreferences.contains("longitude")) {
                 return null
             }
@@ -131,7 +131,7 @@ class LocationManager {
          */
         @SuppressLint("MissingPermission")
         fun registerLocationEvent() {
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager = main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, object: LocationListener {
                 override fun onLocationChanged(location: Location) {
                     MainActivity.getInstance().reloadDistances(location)

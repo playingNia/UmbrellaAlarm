@@ -113,64 +113,6 @@
                 android:textSize="12dp"
                 android:fontFamily="@font/nnsnbold"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_distance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="9dp"
-            android:paddingHorizontal="18dp"
-            android:background="@drawable/background_alarm_setting"
-            android:clickable="true">
-
-            <ImageView
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:id="@+id/image_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="18dp"
-                android:background="@drawable/background_alarm_setting_icon"
-                android:src="@drawable/icon_ruler" />
-
-            <TextView
-                android:id="@+id/text_distance"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/text_distance_description"
-                app:layout_constraintLeft_toRightOf="@id/image_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="19dp"
-                android:layout_marginLeft="12dp"
-                android:text="@string/distance"
-                android:textColor="@color/black"
-                android:textSize="18dp"
-                android:fontFamily="@font/nnsnbold"/>
-
-            <TextView
-                android:id="@+id/text_distance_description"
-                app:layout_constraintTop_toBottomOf="@id/text_distance"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/image_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="26dp"
-                android:layout_marginLeft="12dp"
-                android:text="@string/distance_description"
-                android:textColor="@color/black"
-                android:textSize="12dp"
-                android:fontFamily="@font/nnsnlight"/>
-
-            <TextView
-                android:id="@+id/text_distance_distance"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_width="wrap_content"
-                android:layout_height="13dp"
-                android:text="@string/m"
-                android:textColor="@color/black"
-                android:textSize="12dp"
-                android:fontFamily="@font/nnsnbold"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <TextView

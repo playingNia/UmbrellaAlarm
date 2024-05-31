@@ -1,13 +1,6 @@
 package com.playingnia.umbrellaalarm
 
-import android.annotation.SuppressLint
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -16,14 +9,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
-import com.playingnia.umbrellaalarm.dialogs.DistanceDistanceDialog
 import com.playingnia.umbrellaalarm.dialogs.HomeDistanceDialog
 import com.playingnia.umbrellaalarm.managers.BluetoothManager
 import com.playingnia.umbrellaalarm.services.AlarmService
 import com.playingnia.umbrellaalarm.managers.LocationManager
 import com.playingnia.umbrellaalarm.managers.SettingManager
-import java.io.IOException
-import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private val ACCESS_FINE_LOCATION = android.Manifest.permission.ACCESS_FINE_LOCATION
     private val ACCESS_COARSE_LOCATION = android.Manifest.permission.ACCESS_COARSE_LOCATION
     private val BLUETOOTH_CONNECT = android.Manifest.permission.BLUETOOTH_CONNECT
+    private val BLUETOOTH_SCAN = android.Manifest.permission.BLUETOOTH_SCAN
+    private val POST_NOTIFICATIONS = android.Manifest.permission.POST_NOTIFICATIONS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             reloadDistances(currentLoc)
         }
 
-        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions()
         } else {
             startAlarmService()
@@ -65,14 +57,8 @@ class MainActivity : AppCompatActivity() {
             close()
         }
 
-        BluetoothManager.registerReceiver()
-
         binding.layoutHome.setOnClickListener {
             HomeDistanceDialog(this).show()
-        }
-
-        binding.layoutDistance.setOnClickListener {
-            DistanceDistanceDialog(this).show()
         }
 
         binding.textSaveLocation.setOnClickListener {
@@ -86,7 +72,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun requestPermissions() {
         val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-            if (permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true || permissions[BLUETOOTH_CONNECT] == true) {
+            if (permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true || permissions[BLUETOOTH_CONNECT] == true || permissions[BLUETOOTH_SCAN] == true || permissions[POST_NOTIFICATIONS] == true) {
                 startAlarmService()
             } else {
                 Toast.makeText(this, resources.getString(R.string.permisson_denied), Toast.LENGTH_LONG).show()
@@ -94,7 +80,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        requestPermissionLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, BLUETOOTH_CONNECT))
+        requestPermissionLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, BLUETOOTH_CONNECT, BLUETOOTH_SCAN, POST_NOTIFICATIONS))
     }
 
     /***
@@ -112,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     /***
      * 거리 정보 리프레쉬
      */
-    fun reloadDistances(currentLoc: Location? = LocationManager.getCurrentLocation(), distance: Double = 0.0) {
+    fun reloadDistances(currentLoc: Location? = LocationManager.getCurrentLocation(), distance: Int = 0) {
         val distFromHome = LocationManager.getDistanceFromHome(currentLoc)
         if (distFromHome != null) {
             binding.textHomeDistance.text = "${distFromHome.toInt()}m"
@@ -124,13 +110,11 @@ class MainActivity : AppCompatActivity() {
                 binding.textDebugging.text = "INSIDE"
             }
         }
-
-        binding.textDistanceDistance.text = "${distance.toInt()}m"
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        BluetoothManager.unregisterReceiver()
+        BluetoothManager.interruptThread()
     }
 
     /***

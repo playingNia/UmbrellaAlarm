@@ -40,7 +40,7 @@ class AlarmService() : Service() {
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
         val notification = Notification.Builder(this, CHANNEL_ID).setContentText("서비스 실행 중").setContentTitle("Alarm Service").setSmallIcon(R.drawable.ic_launcher_background)
 
-        startForeground(88, notification.build())
+        startForeground(1, notification.build())
 
         return super.onStartCommand(intent, flags, startId)
     }
