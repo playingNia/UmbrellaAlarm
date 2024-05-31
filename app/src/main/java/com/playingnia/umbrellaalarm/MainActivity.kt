@@ -16,9 +16,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
+import com.playingnia.umbrellaalarm.dialogs.HomeDistanceDialog
 import com.playingnia.umbrellaalarm.managers.BluetoothManager
 import com.playingnia.umbrellaalarm.services.AlarmService
 import com.playingnia.umbrellaalarm.managers.LocationManager
+import com.playingnia.umbrellaalarm.managers.SettingManager
 import java.io.IOException
 import java.util.UUID
 
@@ -64,6 +66,10 @@ class MainActivity : AppCompatActivity() {
 
         BluetoothManager.registerReceiver()
 
+        binding.layoutHome.setOnClickListener {
+            HomeDistanceDialog(this).show()
+        }
+
         binding.textSaveLocation.setOnClickListener {
             LocationManager.saveLocation()
             reloadDistances()
@@ -105,6 +111,12 @@ class MainActivity : AppCompatActivity() {
         val distFromHome = LocationManager.getDistanceFromHome(currentLoc)
         if (distFromHome != null) {
             binding.textHomeDistance.text = "${distFromHome.toInt()}m"
+
+                if (distFromHome > SettingManager.getHomeDistance()) {
+                    binding.textDebugging.text = "OUTSIDE"
+                } else {
+                    binding.textDebugging.text = "INSIDE"
+                }
         }
     }
 

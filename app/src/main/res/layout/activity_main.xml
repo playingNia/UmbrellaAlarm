@@ -25,7 +25,6 @@
                 app:layout_constraintLeft_toRightOf="parent"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
-
                 android:layout_marginLeft="18dp"
                 android:text="@string/app_name"
                 android:textColor="@color/black"
@@ -57,6 +56,7 @@
             android:fontFamily="@font/nnsnextrabold"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_home"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="9dp"
@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dp"
-                android:background="@drawable/icon_background"
+                android:background="@drawable/background_alarm_setting_icon"
                 android:src="@drawable/icon_home" />
 
             <TextView
@@ -115,6 +115,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_distance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingVertical="9dp"
@@ -129,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="18dp"
-                android:background="@drawable/icon_background"
+                android:background="@drawable/background_alarm_setting_icon"
                 android:src="@drawable/icon_ruler" />
 
             <TextView
@@ -171,6 +172,19 @@
                 android:fontFamily="@font/nnsnbold"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_debugging"
+        app:layout_constraintBottom_toTopOf="@id/text_save_location"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_marginLeft="18dp"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="24dp"
+        android:gravity="center"
+        android:fontFamily="@font/nnsnheavy"/>
 
     <TextView
         android:id="@+id/text_save_location"

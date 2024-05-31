@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_dialog"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="19dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginHorizontal="18dp"
+        android:text="@string/distance"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:fontFamily="@font/nnsnheavy"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="13dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginHorizontal="18dp"
+        android:text="@string/distance_dialog_description"
+        android:textColor="@color/black"
+        android:textSize="12dp"
+        android:fontFamily="@font/nnsnlight"/>
+
+    <EditText
+        android:id="@+id/edit_text_distance"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="18dp"
+        android:paddingVertical="18dp"
+        android:paddingHorizontal="18dp"
+        android:background="@drawable/background_input_box"
+        android:inputType="numberDecimal"
+        android:hint="@string/distance"
+        android:textColorHint="@color/dark_gray"
+        android:fontFamily="@font/nnsnbold"
+        android:textSize="12dp"
+        android:textColor="@color/black"
+        android:singleLine="true"
+        android:lines="1"/>
+
+    <TextView
+        android:id="@+id/text_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="18dp"
+        android:layout_marginHorizontal="18dp"
+        android:paddingVertical="18dp"
+        android:paddingHorizontal="18dp"
+        android:background="@drawable/background_dialog_blue_button"
+        android:clickable="true"
+        android:text="@string/save"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="12dp"
+        android:fontFamily="@font/nnsnbold"/>
+
+</LinearLayout>

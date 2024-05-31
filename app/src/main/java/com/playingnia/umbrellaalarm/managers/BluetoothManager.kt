@@ -23,6 +23,7 @@ class BluetoothManager {
 
         private val REQUEST_ENABLE_BLUETOOTH = 1
         private val HC06_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+        private val DEVICE_NAME = "HC-06_UMBRELLA"
 
         private val receiver = object : BroadcastReceiver() {
             @SuppressLint("MissingPermission")
@@ -31,7 +32,7 @@ class BluetoothManager {
                 if (BluetoothDevice.ACTION_FOUND == action) {
                     val device: BluetoothDevice? = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
                     val rssi: Int = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE).toInt()
-                    if (device != null && device.name == "HC-06") {
+                    if (device != null && device.name == DEVICE_NAME) {
                         val distance = calDistance(rssi)
                         main.reloadDistances(distance = distance)
                     }
@@ -50,7 +51,7 @@ class BluetoothManager {
         fun selectDevice() {
             val devices: Set<BluetoothDevice>? = adapter?.bondedDevices
             if (devices != null && devices.isNotEmpty()) {
-                val device = devices.first { it.name == "HC-06" }
+                val device = devices.first { it.name == DEVICE_NAME }
                 connect(device)
             } else {
                 Toast.makeText(main, main.resources.getString(R.string.device_not_found), Toast.LENGTH_SHORT).show()
