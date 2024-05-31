@@ -15,14 +15,14 @@ import com.playingnia.umbrellaalarm.managers.LocationManager
 class GPSService() : Service() {
 
     companion object {
-        var isRunning = false // 중복 실행 방지
-
-        private lateinit var thread: Thread
+        var isRunning = false
     }
 
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
+
+    private lateinit var thread: Thread
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -41,7 +41,7 @@ class GPSService() : Service() {
         val CHANNEL_ID = "GPS Service ID"
         val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_LOW)
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-        val notification = Notification.Builder(this, CHANNEL_ID).setContentText("서비스 실행 중").setContentTitle("GPS Service").setSmallIcon(R.drawable.ic_launcher_background)
+        val notification = Notification.Builder(this, CHANNEL_ID).setContentText("").setContentTitle("GPS Service").setSmallIcon(R.drawable.ic_launcher_background)
 
         startForeground(1, notification.build())
 

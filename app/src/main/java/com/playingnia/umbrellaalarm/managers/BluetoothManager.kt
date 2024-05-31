@@ -33,55 +33,64 @@ class BluetoothManager {
     companion object {
         private val main by lazy { MainActivity.getInstance() }
 
+        var isConnected = false
+
         private val adapter = BluetoothAdapter.getDefaultAdapter()
         var socket: BluetoothSocket? = null
         var inputStream: InputStream? = null
-        private lateinit var device: BluetoothDevice
-        var isConnected = false
+        private var device: BluetoothDevice? = null
         private val HC06_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
         private val DEVICE_NAME = "HC-06_UMBRELLA"
 
+        /***
+         * Get is adapter available.
+         *
+         * @return If adapter is available
+         */
         fun adapterAvailable(): Boolean {
             return adapter != null
         }
 
         /***
-         * HC-06 디바이스 탐색
+         * Find HC-06 device.
+         *
+         * @return If available device is exist
          */
         @SuppressLint("MissingPermission")
-        fun selectDevice() {
+        fun findDevice(): Boolean {
             if (isConnected) {
-                return
+                return false
             }
 
             val devices: Set<BluetoothDevice>? = adapter?.bondedDevices
-            if (devices != null && devices.isNotEmpty()) {
-                device = devices.first { it.name == DEVICE_NAME }
-                connect()
-            } else {
+            if (devices == null || devices.isEmpty()) {
                 Toast.makeText(main, main.resources.getString(R.string.device_not_found), Toast.LENGTH_SHORT).show()
+                return false
             }
+
+            device = devices.first { it.name == DEVICE_NAME }
+            return true
         }
 
         /***
-         * 디바이스 연결
+         * Connect to device.
          */
         @SuppressLint("MissingPermission")
-        private fun connect() {
+        fun connect() {
             try {
-                socket = device.createRfcommSocketToServiceRecord(HC06_UUID)
+                socket = device!!.createRfcommSocketToServiceRecord(HC06_UUID)
                 socket?.connect()
                 adapter?.startDiscovery()
                 startAlarmService()
-                Toast.makeText(MainActivity.getInstance(), main.resources.getString(R.string.device_connected), Toast.LENGTH_SHORT).show()
+                Toast.makeText(main, main.resources.getString(R.string.device_connected), Toast.LENGTH_SHORT).show()
             } catch (e: IOException) {
                 e.printStackTrace()
-                Toast.makeText(MainActivity.getInstance(), main.resources.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
+                Toast.makeText(main, main.resources.getString(R.string.connection_failed), Toast.LENGTH_SHORT).show()
             }
         }
 
         /***
-         * receiver 등록
+         * Start Alarm Service.
          */
         @SuppressLint("MissingPermission")
         fun startAlarmService() {
@@ -93,9 +102,12 @@ class BluetoothManager {
             main.startForegroundService(serviceIntent)
         }
 
+        /***
+         * Notify user to don't forget the umbrella.
+         */
         fun disconnected() {
             isConnected = false
-            AlarmService.notify("우산 알림이", "우산을 두고 간 것으로 예상됩니다! 우산을 꼭 챙겨가세요!")
+            AlarmService.sendAlarm()
         }
     }
 }

@@ -14,9 +14,11 @@
     <string name="success_to_save">위치를 저장했습니다.</string>
     <string name="permisson_denied">필수 권한이 부족합니다.</string>
     <string name="bluetooth_not_available">블루투스를 사용할 수 없습니다.</string>
-    <string name="device_not_found">연결된 디바이스가 존재하지 않습니다.</string>
+    <string name="device_not_found">연결할 디바이스가 존재하지 않습니다.</string>
     <string name="device_connected">연결되었습니다.</string>
     <string name="connection_failed">연결에 실패했습니다.</string>
     <string name="saved">저장되었습니다.</string>
     <string name="save_failed">거리는 1m 이상이어야 합니다.</string>
+
+    <string name="alarm_message">"우산을 두고 간 것으로 예상됩니다! 우산을 꼭 챙겨가세요!"</string>
 </resources>

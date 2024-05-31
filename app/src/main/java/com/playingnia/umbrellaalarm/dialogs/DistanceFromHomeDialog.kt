@@ -11,10 +11,9 @@ import android.widget.Toast
 import com.playingnia.umbrellaalarm.MainActivity
 import com.playingnia.umbrellaalarm.R
 import com.playingnia.umbrellaalarm.databinding.DialogHomeDistanceBinding
-import com.playingnia.umbrellaalarm.managers.LocationManager
 import com.playingnia.umbrellaalarm.managers.SettingManager
 
-class HomeDistanceDialog(private val context: Context): Dialog(context, android.R.style.Theme_Material_Dialog_NoActionBar) {
+class DistanceFromHomeDialog(private val context: Context): Dialog(context, android.R.style.Theme_Material_Dialog_NoActionBar) {
     private val binding by lazy { DialogHomeDistanceBinding.inflate(layoutInflater) }
 
     init {
@@ -44,7 +43,7 @@ class HomeDistanceDialog(private val context: Context): Dialog(context, android.
             val distance = binding.editTextDistance.text.toString()
             val set = SettingManager.setHomeDistance(distance)
             if (set) {
-                MainActivity.getInstance().updateHomeDistance()
+                MainActivity.getInstance().refreshDistanceFromHome()
                 Toast.makeText(context, context.resources.getString(R.string.saved), Toast.LENGTH_SHORT).show()
                 dismiss()
             } else {

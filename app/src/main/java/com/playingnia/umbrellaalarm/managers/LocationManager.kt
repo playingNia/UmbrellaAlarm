@@ -22,32 +22,27 @@ class LocationManager {
 
         private val main by lazy { MainActivity.getInstance() }
 
-        fun SharedPreferences.Editor.putDouble(key: String, double: Double) =
+        private fun SharedPreferences.Editor.putDouble(key: String, double: Double) =
             putLong(key, java.lang.Double.doubleToLongBits(double))
 
-        fun SharedPreferences.Editor.putLocation(loc: Location) {
+        private fun SharedPreferences.Editor.putLocation(loc: Location) {
             putDouble("latitude", loc.latitude)
             putDouble("longitude", loc.longitude)
             this.apply()
         }
 
-        fun SharedPreferences.getDouble(key: String, default: Double) =
+        private fun SharedPreferences.getDouble(key: String, default: Double) =
             java.lang.Double.longBitsToDouble(getLong(key, java.lang.Double.doubleToRawLongBits(default)))
 
-        fun SharedPreferences.getLocation(): Location {
+        private fun SharedPreferences.getLocation(): Location {
             val loc = Location("provider")
             loc.latitude = getDouble("latitude", 0.0)
             loc.longitude = getDouble("longitude", 0.0)
             return loc
         }
 
-        /***
-         * 현재 위치 반환
-         *
-         * @return Location? 현재 위치
-         */
         @SuppressLint("MissingPermission")
-        fun getCurrentLocation(): Location? {
+        private fun getCurrentLocation(): Location? {
             val locationManager = main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val providers = locationManager.getProviders(true)
             var bestLoc: Location? = null
@@ -60,34 +55,22 @@ class LocationManager {
             return bestLoc
         }
 
-        /***
-         * 집 위치 반환
-         *
-         * @return Location 집의 위치
-         */
         private fun getHomeLocation(): Location {
             val sharedPreferences = main.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             return sharedPreferences.getLocation()
         }
 
         /***
-         * 집 위치 저장
+         * Save current location as home.
          */
         @SuppressLint("MissingPermission")
-        fun saveLocation() {
+        fun saveHome() {
             val sharedPreferences = main.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             val loc = getCurrentLocation()
             sharedPreferences.edit().putLocation(loc!!)
             Toast.makeText(main, main.resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
         }
 
-        /***
-         * 두 위치 간의 거리 반환
-         *
-         * @param loc1 위치 1
-         * @param loc2 위치 2
-         * @return Double 두 위치 간의 거리
-         */
         private fun getDistance(loc1: Location, loc2: Location): Double {
             val EARTH_R = 6371.0
 
@@ -106,14 +89,14 @@ class LocationManager {
         }
 
         /***
-         * 집과 현재 위치 간의 거리
+         * Get distance from home to other location.
          *
-         * @param currentLoc 현재 위치
-         * @return Double? 집과 현재 위치 간의 거리
+         * @param loc Location to calculate distance from home
+         * @return Distance from home to other location
          */
         @SuppressLint("MissingPermission")
-        fun getDistanceFromHome(currentLoc: Location?): Double? {
-            if (currentLoc == null) {
+        fun getDistanceFromHome(loc: Location?): Double? {
+            if (loc == null) {
                 return null
             }
 
@@ -122,13 +105,12 @@ class LocationManager {
                 return null
             }
 
-            val loc1 = getHomeLocation()
-            val dist = getDistance(loc1, currentLoc)
+            val dist = getDistance(getHomeLocation(), loc)
             return dist
         }
 
         /***
-         * GPS 업데이트, 이벤트 등록
+         * Start GPS Service.
          */
         @SuppressLint("MissingPermission")
         fun registerLocationEvent() {
@@ -140,8 +122,11 @@ class LocationManager {
             })
         }
 
-        var status = STATUS.INSIDE
+        var status = STATUS.INSIDE // Current status: INSIDE or OUTSIDE
 
+        /***
+         * Refresh current status.
+         */
         fun refreshStatus(loc: Location? = getCurrentLocation()) {
             val distFromHome = getDistanceFromHome(loc)
             if (distFromHome == null || distFromHome <= SettingManager.getHomeDistance()) {

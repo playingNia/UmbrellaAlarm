@@ -23,12 +23,10 @@ import java.io.IOException
 class AlarmService() : Service() {
 
     companion object {
-        var isRunning = false // 중복 실행 방지
-
-        private lateinit var thread: Thread
+        var isRunning = false
 
         @SuppressLint("MissingPermission")
-        fun notify(title: String, text: String) {
+        fun sendAlarm() {
             if (LocationManager.status == STATUS.INSIDE) {
                 return
             }
@@ -39,8 +37,7 @@ class AlarmService() : Service() {
             val notificationManager = main.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
 
-            val builder = NotificationCompat.Builder(main, CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher).setContentTitle(title).setContentText(text).setPriority(
-                NotificationCompat.PRIORITY_HIGH)
+            val builder = NotificationCompat.Builder(main, CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher).setContentTitle(main.resources.getString(R.string.app_name)).setContentText(main.resources.getString(R.string.alarm_message)).setPriority(NotificationCompat.PRIORITY_HIGH)
             with(NotificationManagerCompat.from(main)) {
                 notify(3, builder.build())
             }
@@ -50,6 +47,8 @@ class AlarmService() : Service() {
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
+
+    private lateinit var thread: Thread
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -61,26 +60,26 @@ class AlarmService() : Service() {
 
                 if (BluetoothManager.socket == null || BluetoothManager.socket?.isConnected == false) {
                     BluetoothManager.disconnected()
-                } else {
-                    try {
-                        BluetoothManager.inputStream = BluetoothManager.socket?.inputStream
-                        val buffer = ByteArray(1024)
-                        val bytes = BluetoothManager.inputStream?.read(buffer) ?: -1
+                    continue
+                }
 
-                        if (!BluetoothManager.isConnected && bytes > 0) {
-                            BluetoothManager.isConnected = true
-//                                handler.post {
-//                                    Toast.makeText(main, "연결 됨", Toast.LENGTH_SHORT).show()
-//                                }
-                        } else if(BluetoothManager.isConnected && bytes <= 0) {
-                            BluetoothManager.disconnected()
-                        }
+                try {
+                    BluetoothManager.inputStream = BluetoothManager.socket?.inputStream
+                    val buffer = ByteArray(1024)
+                    val bytes = BluetoothManager.inputStream?.read(buffer) ?: -1
 
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                        if (BluetoothManager.isConnected) {
-                            BluetoothManager.disconnected()
-                        }
+                    if (BluetoothManager.isConnected && bytes <= 0) {
+                        BluetoothManager.disconnected()
+                        continue
+                    }
+
+                    if (!BluetoothManager.isConnected && bytes > 0) {
+                        BluetoothManager.isConnected = true
+                    }
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    if (BluetoothManager.isConnected) {
+                        BluetoothManager.disconnected()
                     }
                 }
             }
@@ -90,7 +89,7 @@ class AlarmService() : Service() {
         val CHANNEL_ID = "Alarm Service ID"
         val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_LOW)
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
-        val notification = Notification.Builder(this, CHANNEL_ID).setContentText("서비스 실행 중").setContentTitle("Alarm Service").setSmallIcon(R.drawable.ic_launcher_background)
+        val notification = Notification.Builder(this, CHANNEL_ID).setContentText("").setContentTitle("Alarm Service").setSmallIcon(R.drawable.ic_launcher_background)
 
         startForeground(2, notification.build())
 
