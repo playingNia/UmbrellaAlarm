@@ -23,5 +23,22 @@ class SettingManager {
             editor.apply()
             return true
         }
+
+        fun getDistanceDistance(): Int {
+            val sharedPreferences = main.getSharedPreferences("Setting", AppCompatActivity.MODE_PRIVATE)
+            return sharedPreferences.getInt("distance", 3)
+        }
+
+        fun setDistanceDistance(distance: String): Boolean {
+            if (distance == "" || distance.toInt() <= 0) {
+                return false
+            }
+
+            val sharedPreferences = main.getSharedPreferences("Setting", AppCompatActivity.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putInt("distance", distance.toInt())
+            editor.apply()
+            return true
+        }
     }
 }

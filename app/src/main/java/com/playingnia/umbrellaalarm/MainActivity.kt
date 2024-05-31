@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
+import com.playingnia.umbrellaalarm.dialogs.DistanceDistanceDialog
 import com.playingnia.umbrellaalarm.dialogs.HomeDistanceDialog
 import com.playingnia.umbrellaalarm.managers.BluetoothManager
 import com.playingnia.umbrellaalarm.services.AlarmService
@@ -70,6 +71,10 @@ class MainActivity : AppCompatActivity() {
             HomeDistanceDialog(this).show()
         }
 
+        binding.layoutDistance.setOnClickListener {
+            DistanceDistanceDialog(this).show()
+        }
+
         binding.textSaveLocation.setOnClickListener {
             LocationManager.saveLocation()
             reloadDistances()
@@ -112,12 +117,15 @@ class MainActivity : AppCompatActivity() {
         if (distFromHome != null) {
             binding.textHomeDistance.text = "${distFromHome.toInt()}m"
 
-                if (distFromHome > SettingManager.getHomeDistance()) {
-                    binding.textDebugging.text = "OUTSIDE"
-                } else {
-                    binding.textDebugging.text = "INSIDE"
-                }
+            // DEBUGGING
+            if (distFromHome > SettingManager.getHomeDistance()) {
+                binding.textDebugging.text = "OUTSIDE"
+            } else {
+                binding.textDebugging.text = "INSIDE"
+            }
         }
+
+        binding.textDistanceDistance.text = "${distance.toInt()}m"
     }
 
     override fun onDestroy() {
