@@ -7,10 +7,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.playingnia.umbrellaalarm.MainActivity
@@ -58,7 +55,7 @@ class AlarmService() : Service() {
             while (true) {
                 Thread.sleep(5000)
 
-                if (BluetoothManager.socket == null || BluetoothManager.socket?.isConnected == false) {
+                if (BluetoothManager.isConnected && (BluetoothManager.socket == null || BluetoothManager.socket?.isConnected == false)) {
                     BluetoothManager.disconnected()
                     continue
                 }

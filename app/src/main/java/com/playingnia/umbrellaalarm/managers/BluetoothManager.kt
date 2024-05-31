@@ -1,32 +1,16 @@
 package com.playingnia.umbrellaalarm.managers
 
 import android.annotation.SuppressLint
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothSocket
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.playingnia.umbrellaalarm.MainActivity
 import com.playingnia.umbrellaalarm.R
 import com.playingnia.umbrellaalarm.services.AlarmService
-import com.playingnia.umbrellaalarm.services.GPSService
 import java.io.IOException
 import java.io.InputStream
-import java.io.OutputStream
 import java.util.UUID
 
 class BluetoothManager {
