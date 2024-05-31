@@ -10,8 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.playingnia.umbrellaalarm.databinding.ActivityMainBinding
 import com.playingnia.umbrellaalarm.dialogs.HomeDistanceDialog
+import com.playingnia.umbrellaalarm.enums.STATUS
 import com.playingnia.umbrellaalarm.managers.BluetoothManager
-import com.playingnia.umbrellaalarm.services.AlarmService
+import com.playingnia.umbrellaalarm.services.GPSService
 import com.playingnia.umbrellaalarm.managers.LocationManager
 import com.playingnia.umbrellaalarm.managers.SettingManager
 
@@ -39,10 +40,7 @@ class MainActivity : AppCompatActivity() {
 
         mainActivity = this
 
-        val currentLoc = LocationManager.getCurrentLocation()
-        if (currentLoc != null) {
-            reloadDistances(currentLoc)
-        }
+        updateHomeDistance()
 
         if (ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions()
@@ -63,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.textSaveLocation.setOnClickListener {
             LocationManager.saveLocation()
-            reloadDistances()
         }
     }
 
@@ -83,38 +80,25 @@ class MainActivity : AppCompatActivity() {
         requestPermissionLauncher.launch(arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION, BLUETOOTH_CONNECT, BLUETOOTH_SCAN, POST_NOTIFICATIONS))
     }
 
+    fun updateHomeDistance() {
+        LocationManager.refreshStatus()
+        binding.textHomeDistance.text = "${SettingManager.getHomeDistance()}m"
+    }
+
     /***
      * 알람 서비스 생성
      */
     private fun startAlarmService() {
-        if (AlarmService.isRunning) {
+        if (GPSService.isRunning) {
             return
         }
 
-        val serviceIntent = Intent(this, AlarmService::class.java)
+        val serviceIntent = Intent(this, GPSService::class.java)
         startForegroundService(serviceIntent)
-    }
-
-    /***
-     * 거리 정보 리프레쉬
-     */
-    fun reloadDistances(currentLoc: Location? = LocationManager.getCurrentLocation(), distance: Int = 0) {
-        val distFromHome = LocationManager.getDistanceFromHome(currentLoc)
-        if (distFromHome != null) {
-            binding.textHomeDistance.text = "${distFromHome.toInt()}m"
-
-            // DEBUGGING
-            if (distFromHome > SettingManager.getHomeDistance()) {
-                binding.textDebugging.text = "OUTSIDE"
-            } else {
-                binding.textDebugging.text = "INSIDE"
-            }
-        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        BluetoothManager.interruptThread()
     }
 
     /***

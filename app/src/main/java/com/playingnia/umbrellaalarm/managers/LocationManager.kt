@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.playingnia.umbrellaalarm.MainActivity
 import com.playingnia.umbrellaalarm.R
+import com.playingnia.umbrellaalarm.enums.STATUS
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -134,9 +135,20 @@ class LocationManager {
             val locationManager = main.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, object: LocationListener {
                 override fun onLocationChanged(location: Location) {
-                    MainActivity.getInstance().reloadDistances(location)
+                    refreshStatus(location)
                 }
             })
+        }
+
+        var status = STATUS.INSIDE
+
+        fun refreshStatus(loc: Location? = getCurrentLocation()) {
+            val distFromHome = getDistanceFromHome(loc)
+            if (distFromHome == null || distFromHome <= SettingManager.getHomeDistance()) {
+                status = STATUS.INSIDE
+            } else {
+                status = STATUS.OUTSIDE
+            }
         }
     }
 }

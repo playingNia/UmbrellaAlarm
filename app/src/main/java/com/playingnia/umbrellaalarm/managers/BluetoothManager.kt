@@ -22,6 +22,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.playingnia.umbrellaalarm.MainActivity
 import com.playingnia.umbrellaalarm.R
+import com.playingnia.umbrellaalarm.services.AlarmService
+import com.playingnia.umbrellaalarm.services.GPSService
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -32,15 +34,12 @@ class BluetoothManager {
         private val main by lazy { MainActivity.getInstance() }
 
         private val adapter = BluetoothAdapter.getDefaultAdapter()
-        private var socket: BluetoothSocket? = null
-        private var inputStream: InputStream? = null
+        var socket: BluetoothSocket? = null
+        var inputStream: InputStream? = null
         private lateinit var device: BluetoothDevice
-        private var isConnected = false
+        var isConnected = false
         private val HC06_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
         private val DEVICE_NAME = "HC-06_UMBRELLA"
-
-        private lateinit var thread: Thread
-        private var isThreadRunning = false
 
         fun adapterAvailable(): Boolean {
             return adapter != null
@@ -73,7 +72,7 @@ class BluetoothManager {
                 socket = device.createRfcommSocketToServiceRecord(HC06_UUID)
                 socket?.connect()
                 adapter?.startDiscovery()
-                startThread()
+                startAlarmService()
                 Toast.makeText(MainActivity.getInstance(), main.resources.getString(R.string.device_connected), Toast.LENGTH_SHORT).show()
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -85,77 +84,18 @@ class BluetoothManager {
          * receiver 등록
          */
         @SuppressLint("MissingPermission")
-        fun startThread() {
-            if (isThreadRunning) {
+        fun startAlarmService() {
+            if (AlarmService.isRunning) {
                 return
             }
 
-            inputStream = socket?.inputStream
-            thread = Thread {
-                while (true) {
-                    Thread.sleep(5000)
-
-                    if (socket == null || socket?.isConnected == false) {
-                        disconnected()
-                    } else {
-                        try {
-                            val inputStream = socket?.inputStream
-                            val buffer = ByteArray(1024)
-                            val bytes = inputStream?.read(buffer) ?: -1
-
-                            if (!isConnected && bytes > 0) {
-                                isConnected = true
-//                                handler.post {
-//                                    Toast.makeText(main, "연결 됨", Toast.LENGTH_SHORT).show()
-//                                }
-                            } else if(isConnected && bytes <= 0) {
-                                disconnected()
-                            }
-
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                            if (isConnected) {
-                                disconnected()
-                            }
-                        }
-                    }
-                }
-            }
-            thread.start()
-            isThreadRunning = true
+            val serviceIntent = Intent(main, AlarmService::class.java)
+            main.startForegroundService(serviceIntent)
         }
 
-        /***
-         * receiver 등록 해제
-         */
-        fun interruptThread() {
-            isThreadRunning = false
-            thread.interrupt()
-
-            try {
-                inputStream?.close()
-                socket?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        private fun disconnected() {
+        fun disconnected() {
             isConnected = false
-            notify("우산 알림이", "우산을 두고 간 것으로 예상됩니다! 우산을 꼭 챙겨가세요!")
-        }
-
-        @SuppressLint("MissingPermission")
-        private fun notify(title: String, text: String) {
-            val CHANNEL_ID = "Bluetooth Manager ID"
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
-            val notificationManager = main.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-
-            val builder = NotificationCompat.Builder(main, CHANNEL_ID).setSmallIcon(R.mipmap.ic_launcher).setContentTitle(title).setContentText(text).setPriority(NotificationCompat.PRIORITY_HIGH)
-            with(NotificationManagerCompat.from(main)) {
-                notify(1, builder.build())
-            }
+            AlarmService.notify("우산 알림이", "우산을 두고 간 것으로 예상됩니다! 우산을 꼭 챙겨가세요!")
         }
     }
 }
