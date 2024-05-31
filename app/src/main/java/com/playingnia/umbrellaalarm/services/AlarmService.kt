@@ -5,16 +5,12 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
-import android.util.Log
-import android.widget.Toast
-import com.playingnia.umbrellaalarm.MainActivity
 import com.playingnia.umbrellaalarm.R
-import com.playingnia.umbrellaalarm.utils.LocationManager
+import com.playingnia.umbrellaalarm.managers.LocationManager
 
 class AlarmService() : Service() {
 

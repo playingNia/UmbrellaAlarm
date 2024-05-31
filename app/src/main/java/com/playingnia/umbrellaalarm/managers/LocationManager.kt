@@ -1,4 +1,4 @@
-package com.playingnia.umbrellaalarm.utils
+package com.playingnia.umbrellaalarm.managers
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.playingnia.umbrellaalarm.MainActivity
@@ -41,6 +40,11 @@ class LocationManager {
             return loc
         }
 
+        /***
+         * 현재 위치 반환
+         *
+         * @return Location? 현재 위치
+         */
         @SuppressLint("MissingPermission")
         fun getCurrentLocation(): Location? {
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -55,11 +59,19 @@ class LocationManager {
             return bestLoc
         }
 
+        /***
+         * 집 위치 반환
+         *
+         * @return Location 집의 위치
+         */
         private fun getHomeLocation(): Location {
             val sharedPreferences = context.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
             return sharedPreferences.getLocation()
         }
 
+        /***
+         * 집 위치 저장
+         */
         @SuppressLint("MissingPermission")
         fun saveLocation() {
             val sharedPreferences = context.getSharedPreferences("Location", AppCompatActivity.MODE_PRIVATE)
@@ -68,6 +80,13 @@ class LocationManager {
             Toast.makeText(context, context.resources.getString(R.string.success_to_save), Toast.LENGTH_SHORT).show()
         }
 
+        /***
+         * 두 위치 간의 거리 반환
+         *
+         * @param loc1 위치 1
+         * @param loc2 위치 2
+         * @return Double 두 위치 간의 거리
+         */
         private fun getDistance(loc1: Location, loc2: Location): Double {
             val EARTH_R = 6371.0
 
@@ -85,6 +104,12 @@ class LocationManager {
             return EARTH_R * c * 1000
         }
 
+        /***
+         * 집과 현재 위치 간의 거리
+         *
+         * @param currentLoc 현재 위치
+         * @return Double? 집과 현재 위치 간의 거리
+         */
         @SuppressLint("MissingPermission")
         fun getDistanceFromHome(currentLoc: Location?): Double? {
             if (currentLoc == null) {
@@ -101,6 +126,9 @@ class LocationManager {
             return dist
         }
 
+        /***
+         * GPS 업데이트, 이벤트 등록
+         */
         @SuppressLint("MissingPermission")
         fun registerLocationEvent() {
             val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
