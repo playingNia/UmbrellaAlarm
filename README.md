@@ -1,0 +1,1 @@
+Font: https://help.naver.com/service/30016/contents/18088?osType=PC&lang=ko
